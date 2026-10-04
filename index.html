@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Um coração para você ❤️</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Arial, sans-serif;
+    }
+
+    canvas {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    .message {
+      position: fixed;
+      bottom: 28px;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      color: rgba(255,255,255,.85);
+      font-size: 16px;
+      letter-spacing: 1px;
+      text-shadow: 0 0 10px rgba(255,255,255,.5);
+      pointer-events: none;
+      animation: pulse 2s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: .55; }
+      50% { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="heart"></canvas>
+<div class="message">feito especialmente para você ❤️</div>
+
+<script>
+const canvas = document.getElementById("heart");
+const ctx = canvas.getContext("2d");
+
+let width, height, scale;
+
+const colors = [
+  "#ff0000",
+  "#008cff",
+  "#00ff44",
+  "#ffff00",
+  "#00ffff",
+  "#ff00ff",
+  "#ff8c00",
+  "#ff69b4"
+];
+
+function resize() {
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+  width = window.innerWidth;
+  height = window.innerHeight;
+
+  canvas.width = width * dpr;
+  canvas.height = height * dpr;
+  canvas.style.width = width + "px";
+  canvas.style.height = height + "px";
+
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  scale = Math.min(width, height) / 38;
+}
+
+window.addEventListener("resize", resize);
+resize();
+
+function heartX(angle) {
+  return 16 * Math.pow(Math.sin(angle), 3);
+}
+
+function heartY(angle) {
+  return 13 * Math.cos(angle)
+       - 5 * Math.cos(2 * angle)
+       - 2 * Math.cos(3 * angle)
+       - Math.cos(4 * angle);
+}
+
+function draw() {
+  ctx.fillStyle = "rgba(0, 0, 0, 0.18)";
+  ctx.fillRect(0, 0, width, height);
+
+  const centerX = width / 2;
+  const centerY = height / 2;
+
+  for (let i = 0; i < 120; i++) {
+    const angle = i * (Math.PI * 2) / 120;
+
+    const x = centerX + heartX(angle) * scale;
+    const y = centerY - heartY(angle) * scale;
+
+    const color = colors[Math.floor(Math.random() * colors.length)];
+
+    ctx.save();
+
+    ctx.translate(x, y);
+    ctx.rotate((Math.random() * 360) * Math.PI / 180);
+
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1;
+
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = color;
+
+    ctx.beginPath();
+
+    for (let j = 0; j < 8; j++) {
+      ctx.moveTo(0, 0);
+      ctx.lineTo(6, 0);
+      ctx.moveTo(0, 0);
+      ctx.lineTo(-6, 0);
+      ctx.rotate(Math.PI / 4);
+    }
+
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  requestAnimationFrame(draw);
+}
+
+draw();
+</script>
+
+</body>
+</html>
